@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  db:
+    build:
+        context: .
+        dockerfile: postgresql.Dockerfile
+    container_name: postgres-db
+    restart: always
+    volumes:
+    - './postgres_data:/var/lib/postgresql/data'
+    env_file:
+      - .env.postgresql
+    ports:
+    - '5433:5432'
+  api:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    container_name: python-flask-songs-rating-stats-api
+    volumes:
+      - ".:/app"
+    ports:
+      - "6001:6000"
+    env_file:
+      - .env.dev
+    tty: true
+    depends_on:
+      - db
+    links:
+      - db
