@@ -1,0 +1,14 @@
+celery==5.1.0
+redis==3.5.3
+psycopg2==2.8.6
+wheel
+setuptools
+Flask==1.1.2
+python-dotenv
+Flask-SQLAlchemy==2.5.1
+SQLAlchemy==1.4.15
+marshmallow-sqlalchemy==0.25.0
+flask_restful==0.3.9
+Jinja2==3.0.1
+itsdangerous==2.0.1
+Werkzeug==2.0.1

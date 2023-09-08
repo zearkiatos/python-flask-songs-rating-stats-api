@@ -1,0 +1,78 @@
+version: "3.9"
+
+services:
+  rating-api:
+    build:
+      context: python-flask-songs-rating-api/.
+      dockerfile: Dockerfile
+    container_name: songs-rating-api
+    volumes:
+      - "./python-flask-songs-rating-api/.:/app"
+    ports:
+      - "5006:5005"
+    env_file:
+      - python-flask-songs-rating-api/.env.dev
+    tty: true
+    depends_on:
+      - songs-api
+    links:
+      - songs-api
+  songs-api:
+    build:
+      context: python-flask-songs-api/.
+      dockerfile: Dockerfile
+    container_name: songs-api
+    volumes:
+      - "./python-flask-songs-api/.:/app"
+    ports:
+      - "5001:5000"
+    env_file:
+      - python-flask-songs-api/.env.dev
+    tty: true
+    depends_on:
+      - broker
+    links:
+      - broker
+  broker:
+    build:
+      context:  python-flask-songs-api/.
+      dockerfile: redis.Dockerfile
+    container_name: songs-broker
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./data/redis/:/data
+  db:
+    build:
+        context: .
+        dockerfile: postgresql.Dockerfile
+    container_name: postgres-db
+    restart: always
+    volumes:
+    - './postgres_data:/var/lib/postgresql/data'
+    env_file:
+      - .env.postgresql
+    ports:
+    - '5433:5432'
+  api:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    container_name: python-flask-songs-rating-stats-api
+    volumes:
+      - ".:/app"
+    ports:
+      - "6001:6000"
+    env_file:
+      - .env.dev
+    tty: true
+    depends_on:
+      - songs-api
+      - rating-api
+      - broker
+      - db
+    links:
+      - songs-api
+      - rating-api
+      - broker
+      - db
